@@ -85,6 +85,26 @@
   }
 </style>
 
+
+<style>
+  /* Always horizontal scroll for controls and tunings */
+  #controls, #tunings {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    flex-direction: row !important;
+  }
+  /* Chord lists as horizontal scrollable rows */
+  .chord-list {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    gap: 0.5rem;
+  }
+  .chord-list .chord-block {
+    flex: 0 0 auto !important;
+  }
+</style>
+
 </head>
 <body>
   <section id="controls">
