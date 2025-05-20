@@ -264,7 +264,9 @@ const fontSize = `${H * 0.03}px`;
         if(f>0){
           const txt=document.createElementNS(svg.namespaceURI,'text');
           txt.setAttribute('x', x - segment/2); txt.setAttribute('y', H + 14);
-          txt.setAttribute('font-size', fontSize); txt.setAttribute('text-anchor','middle');
+          txt.setAttribute('font-size', fontSize);
+  txt.setAttribute('text-anchor','middle');
+  txt.setAttribute('dominant-baseline','middle'); txt.setAttribute('text-anchor','middle');
           txt.textContent=f; svg.appendChild(txt);
         }
       }
@@ -289,7 +291,9 @@ const fontSize = `${H * 0.03}px`;
           circle.setAttribute('stroke','#000'); svg.appendChild(circle);
           const txt=document.createElementNS(svg.namespaceURI,'text');
           txt.setAttribute('x',cx); txt.setAttribute('y',y+4);
-          txt.setAttribute('font-size', fontSize); txt.setAttribute('text-anchor','middle');
+          txt.setAttribute('font-size', fontSize);
+  txt.setAttribute('text-anchor','middle');
+  txt.setAttribute('dominant-baseline','middle'); txt.setAttribute('text-anchor','middle');
           txt.textContent=note; svg.appendChild(txt);
         }
       });
