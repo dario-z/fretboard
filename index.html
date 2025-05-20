@@ -19,71 +19,20 @@
     }
     html, body { margin: 0; padding: 0; height: 100%; font-family: Arial, sans-serif; color: var(--text-color); }
     section { width: 100%; box-sizing: border-box; }
-    #controls {
-      background: var(--bg-controls);
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem;
-    }
+    #controls { background: var(--bg-controls); display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; padding: 1rem; }
     #controls label { display: flex; flex-direction: column; font-size: 0.9rem; }
     #tunings { display: flex; gap: 0.5rem; }
-    #tunings label { display: flex; flex-direction: column; font-size: 0.8rem; }
     #fretboard-section { background: var(--bg-fretboard); padding: 1rem; }
     #fretboard { display: block; width: 100%; }
-    #chords-section { background: var(--bg-controls); padding: 1rem; }
-    #chords { display: flex; flex-direction: column; gap: 1rem; }
-    .chord-group h3 { margin: 0 0 0.5rem 0; font-size: 1rem; }
-    .chord-group .chord-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .chord-block {
-      background: white;
-      border-radius: 20px;
-      padding: 0.5rem;
-      cursor: pointer;
-      width: 120px;
-      height: 60px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-      transition: transform 0.1s;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      overflow: hidden;
-    }
-    .chord-block:hover { transform: translateY(-2px); }
-    .chord-block.active { opacity: 0.8; }
-    .chord-name { font-weight: bold; margin-bottom: 0.3rem; font-size: 0.9rem; }
-    .chord-notes { font-size: 0.8rem; }
-
-    /* Responsive adjustments */
-    @media (max-width: 600px) {
-      #controls { flex-direction: column; }
-      #tunings { flex-direction: column; }
-      .chord-block { width: 100px; height: 55px; border-radius: 20px; }
-    }
+    #chords-section { background: var(--bg-chords); padding: 1rem; }
+    .degree-section { margin-bottom: 1rem; padding: 0.5rem; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .degree-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+    .degree-title { font-weight: bold; }
+    .degree-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .degree-buttons button { padding: 0.3rem 0.6rem; border: none; border-radius: 4px; cursor: pointer; background: var(--bg-controls); transition: background 0.2s; }
+    .degree-buttons button.selected { background: var(--scale-color); }
+    .highlight-btn { padding: 0.3rem 0.8rem; border: none; border-radius: 4px; cursor: pointer; background: var(--root-color); color: white; }
   </style>
-
-  <style>
-    /* Always horizontal scroll for controls and tunings */
-    #controls, #tunings {
-      flex-wrap: nowrap !important;
-      overflow-x: auto !important;
-      flex-direction: row !important;
-    }
-    /* Chord lists as horizontal scrollable rows */
-    .chord-list {
-      display: flex !important;
-      flex-wrap: nowrap !important;
-      overflow-x: auto !important;
-      gap: 0.5rem;
-    }
-    .chord-list .chord-block {
-      flex: 0 0 auto !important;
-    }
-  </style>
-
 </head>
 <body>
   <section id="controls">
@@ -94,221 +43,88 @@
   </section>
   <section id="fretboard-section"><svg id="fretboard"></svg></section>
   <section id="chords-section">
-    <div id="chords">
-      <div class="chord-group" id="triads">
-        <h3>3-note Chords (Triads)</h3>
-        <div class="chord-list"></div>
-      </div>
-      <div class="chord-group" id="sevenths">
-        <h3>4-note Chords: 7th</h3>
-        <div class="chord-list"></div>
-      </div>
-      <div class="chord-group" id="ninths">
-        <h3>4-note Chords: 9th</h3>
-        <div class="chord-list"></div>
-      </div>
-      <div class="chord-group" id="elevenths">
-        <h3>4-note Chords: 11th</h3>
-        <div class="chord-list"></div>
-      </div>
-    </div>
+    <!-- Dynamic degree sections here -->
   </section>
 
   <script>
     const notes = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
     const scales = {
-      'Major Pentatonic': [0,2,4,7,9],
-      'Dorian Pentatonic': [0,2,5,7,10],
-      'Phrygian Pentatonic': [0,3,5,8,10],
-      'Mixolydian Pentatonic': [0,2,5,7,9],
-      'Minor (Aeolian) Pentatonic': [0,3,5,7,10],
-      'Major (Ionian)': [0,2,4,5,7,9,11],
-      'Dorian': [0,2,3,5,7,9,10],
-      'Phrygian': [0,1,3,5,7,8,10],
-      'Lydian': [0,2,4,6,7,9,11],
-      'Mixolydian': [0,2,4,5,7,9,10],
-      'Minor (Aeolian)': [0,2,3,5,7,8,10],
-      'Locrian': [0,1,3,5,6,8,10],
-      'Harmonic Minor': [0,2,3,5,7,8,11],
-      'Melodic Minor': [0,2,3,5,7,9,11],
-      'Harmonic Major': [0,2,4,5,7,8,11],
-      'Melodic Major': [0,2,4,5,7,8,10],
-      'Double Harmonic Major': [0,1,4,5,7,8,11]
+      'Major Pentatonic': [0,2,4,7,9], 'Dorian Pentatonic': [0,2,5,7,10], 'Phrygian Pentatonic': [0,3,5,8,10], 'Mixolydian Pentatonic': [0,2,5,7,9], 'Minor (Aeolian) Pentatonic': [0,3,5,7,10],
+      'Major (Ionian)': [0,2,4,5,7,9,11], 'Dorian': [0,2,3,5,7,9,10], 'Phrygian': [0,1,3,5,7,8,10], 'Lydian': [0,2,4,6,7,9,11], 'Mixolydian': [0,2,4,5,7,9,10],
+      'Minor (Aeolian)': [0,2,3,5,7,8,10], 'Locrian': [0,1,3,5,6,8,10], 'Harmonic Minor': [0,2,3,5,7,8,11], 'Melodic Minor': [0,2,3,5,7,9,11], 'Harmonic Major': [0,2,4,5,7,8,11],
+      'Melodic Major': [0,2,4,5,7,8,10], 'Double Harmonic Major': [0,1,4,5,7,8,11]
     };
-    const defaultTunings = {
-      1:['E'],2:['B','E'],3:['G','B','E'],4:['D','G','B','E'],
-      5:['A','D','G','B','E'],6:['E','A','D','G','B','E'],
-      7:['B','E','A','D','G','B','E'],8:[
-      'E','B','E','A','D','G','B','E'],
-      9:['C#','F#','B','E','A','D','G','B','E'],10:['B','E','A','D','G','B','E','A','D','G']
-    };
+    const defaultTunings = { 1:['E'],2:['B','E'],3:['G','B','E'],4:['D','G','B','E'],5:['A','D','G','B','E'],6:['E','A','D','G','B','E'],7:['B','E','A','D','G','B','E'],8:['E','B','E','A','D','G','B','E'],9:['C#','F#','B','E','A','D','G','B','E'],10:['B','E','A','D','G','B','E','A','D','G'] };
     const keySelect = document.getElementById('key-select');
     const scaleSelect = document.getElementById('scale-select');
     const stringsSelect = document.getElementById('strings-select');
     const tuningsDiv = document.getElementById('tunings');
     const svg = document.getElementById('fretboard');
-    const lists = {
-      triads: document.querySelector('#triads .chord-list'),
-      sevenths: document.querySelector('#sevenths .chord-list'),
-      ninths: document.querySelector('#ninths .chord-list'),
-      elevenths: document.querySelector('#elevenths .chord-list')
-    };
-    let state = { key:'E', scale:'Minor (Aeolian)', strings:8, tuning:[], scaleNotes:[], frets:24, activeChord:[] };
+    const chordsSection = document.getElementById('chords-section');
+
+    let state = { key:'E', scale:'Minor (Aeolian)', strings:8, tuning:[], scaleNotes:[], frets:24, highlight:{ active:false, notes:[] }, chordSelections:{} };
 
     function init() {
-      notes.forEach(n=> keySelect.innerHTML+=`<option>${n}</option>`);
-      Object.keys(scales).forEach(s=> scaleSelect.innerHTML+=`<option>${s}</option>`);
-      for(let i=1;i<=10;i++) stringsSelect.innerHTML+=`<option>${i}</option>`;
-      keySelect.value=state.key; scaleSelect.value=state.scale; stringsSelect.value=state.strings;
-      keySelect.onchange=update; scaleSelect.onchange=update; stringsSelect.onchange=updateStrings;
-      updateStrings();
-      window.addEventListener('resize', drawFretboard);
+      notes.forEach(n=> keySelect.innerHTML += `<option>${n}</option>`);
+      Object.keys(scales).forEach(s=> scaleSelect.innerHTML += `<option>${s}</option>`);
+      for(let i=1;i<=10;i++) stringsSelect.innerHTML += `<option>${i}</option>`;
+      keySelect.value = state.key; scaleSelect.value = state.scale; stringsSelect.value = state.strings;
+      keySelect.onchange = update; scaleSelect.onchange = update; stringsSelect.onchange = updateStrings;
+      updateStrings(); window.addEventListener('resize', drawFretboard);
     }
 
-    function updateStrings(){
-      state.strings=+stringsSelect.value; tuningsDiv.innerHTML='';
-      for(let i=0;i<state.strings;i++){
-        const actualIdx=state.strings-1-i;
-        const lbl=document.createElement('label'); lbl.textContent=`String ${i+1}`;
-        const sel=document.createElement('select'); notes.forEach(n=> sel.innerHTML+=`<option>${n}</option>`);
-        sel.value=defaultTunings[state.strings][actualIdx]||'C'; sel.onchange=update;
-        lbl.appendChild(sel); tuningsDiv.appendChild(lbl);
-      }
-      update();
-    }
+    function updateStrings(){ state.strings = +stringsSelect.value; tuningsDiv.innerHTML = ''; for(let i=0;i<state.strings;i++){ const idx = state.strings-1-i; const label = document.createElement('label'); label.textContent = `String ${i+1}`; const sel = document.createElement('select'); notes.forEach(n=> sel.innerHTML += `<option>${n}</option>`); sel.value = defaultTunings[state.strings][idx] || 'C'; sel.onchange = update; label.appendChild(sel); tuningsDiv.appendChild(label);} update(); }
 
-    function update(){
-      state.key=keySelect.value; state.scale=scaleSelect.value;
-      state.tuning=Array.from(tuningsDiv.querySelectorAll('select')).map(s=>s.value);
-      computeScale(); drawFretboard(); renderChords();
-    }
+    function update(){ state.key = keySelect.value; state.scale = scaleSelect.value; state.tuning = Array.from(tuningsDiv.querySelectorAll('select')).map(s=>s.value); computeScale(); drawFretboard(); renderChordControls(); }
 
-    function computeScale(){
-      const rootIdx=notes.indexOf(state.key);
-      state.scaleNotes=scales[state.scale].map(i=> notes[(rootIdx+i)%12]);
-    }
+    function computeScale(){ const rootIdx = notes.indexOf(state.key); state.scaleNotes = scales[state.scale].map(i => notes[(rootIdx + i) % 12]); }
 
-    function drawFretboard(){
-      const W = svg.clientWidth;
-      // Calculate vertical size adapting to viewport
-      const bottomMargin = 20;
-      const initialH = W * 0.3;
-      const maxH = window.innerHeight - bottomMargin;
-      const H = Math.min(initialH, maxH);
+    function drawFretboard(){ const W = svg.clientWidth; const bottom = 20; const H = Math.min(W*0.3, window.innerHeight-bottom); const minW = H*0.005, maxW = H*0.02; const totalH = H+bottom; svg.setAttribute('viewBox', `0 0 ${W} ${totalH}`); svg.setAttribute('height', totalH); const S=state.strings, F=state.frets; const seg=W/(F+1), m=seg; svg.innerHTML=''; [[-1,0],[11,12],[23,24]].forEach(([a,b])=>{ const r=document.createElementNS(svg.namespaceURI,'rect'); r.setAttribute('x',m+a*seg); r.setAttribute('y',0); r.setAttribute('width',(b-a)*seg); r.setAttribute('height',H); r.setAttribute('fill','var(--fill-yellow)'); svg.appendChild(r); }); [3,5,7,9,15,17,19,21].forEach(n=>{ const r=document.createElementNS(svg.namespaceURI,'rect'); r.setAttribute('x',m+(n-1)*seg); r.setAttribute('y',0); r.setAttribute('width',seg); r.setAttribute('height',H); r.setAttribute('fill','var(--fill-blue)'); svg.appendChild(r); }); state.tuning.forEach((_,i)=>{ const y=(i+1)*H/(S+1); const l=document.createElementNS(svg.namespaceURI,'line'); l.setAttribute('x1',0); l.setAttribute('y1',y); l.setAttribute('x2',W); l.setAttribute('y2',y); const w=S>1 ? minW + i*(maxW-minW)/(S-1) : (minW+maxW)/2; l.setAttribute('stroke','var(--string-color)'); l.setAttribute('stroke-width',w); svg.appendChild(l); }); for(let f=0;f<=F;f++){ const x=m+f*seg; const l=document.createElementNS(svg.namespaceURI,'line'); l.setAttribute('x1',x); l.setAttribute('y1',0); l.setAttribute('x2',x); l.setAttribute('y2',H); l.setAttribute('stroke','var(--fret-line)'); l.setAttribute('stroke-width',f===0?4:1); svg.appendChild(l); if(f>0){ const t=document.createElementNS(svg.namespaceURI,'text'); t.setAttribute('x',x-seg/2); t.setAttribute('y',H+14); t.setAttribute('font-size',`${H*0.03}px`); t.setAttribute('text-anchor','middle'); t.setAttribute('dominant-baseline','middle'); t.textContent=f; svg.appendChild(t);} } state.tuning.forEach((open,i)=>{ const openIdx=notes.indexOf(open); const y=(i+1)*H/(S+1); for(let f=0;f<=F;f++){ const note=notes[(openIdx+f)%12]; const sel = state.highlight.active ? state.highlight.notes.includes(note) : state.scaleNotes.includes(note); if(!sel) continue; const cx=m+(f-0.5)*seg; const c=document.createElementNS(svg.namespaceURI,'circle'); c.setAttribute('cx',cx); c.setAttribute('cy',y); c.setAttribute('r',H*0.04); const isRoot=note===state.key; c.setAttribute('fill', isRoot?'var(--root-color)':'var(--scale-color)'); c.setAttribute('stroke','#000'); svg.appendChild(c); const t=document.createElementNS(svg.namespaceURI,'text'); t.setAttribute('x',cx); t.setAttribute('y',y+4); t.setAttribute('font-size',`${H*0.03}px`); t.setAttribute('text-anchor','middle'); t.setAttribute('dominant-baseline','middle'); t.textContent=note; svg.appendChild(t);} }); }
 
-      // Dynamic note sizing based on computed H
-      const radiusOpen = H * 0.05;
-      const radius = H * 0.04;
-      const fontSize = `${H * 0.03}px`;
-      const totalHeight = H + bottomMargin;
-      svg.setAttribute('viewBox', `0 0 ${W} ${totalHeight}`);
-      svg.setAttribute('height', totalHeight);
-
-      const S=state.strings, F=state.frets;
-      const segment=W/(F+1), margin=segment;
-      svg.innerHTML='';
-
-      // fretboard background and markers
-      [[-1,0],[11,12],[23,24]].forEach(([a,b])=>{
-        const rect=document.createElementNS(svg.namespaceURI,'rect');
-        rect.setAttribute('x', margin + a*segment); rect.setAttribute('y', 0);
-        rect.setAttribute('width', (b-a)*segment); rect.setAttribute('height', H);
-        rect.setAttribute('fill','var(--fill-yellow)'); svg.appendChild(rect);
-      });
-      [3,5,7,9,15,17,19,21].forEach(n=>{
-        const rect=document.createElementNS(svg.namespaceURI,'rect');
-        rect.setAttribute('x', margin + (n-1)*segment); rect.setAttribute('y', 0);
-        rect.setAttribute('width', segment); rect.setAttribute('height', H);
-        rect.setAttribute('fill','var(--fill-blue)'); svg.appendChild(rect);
-      });
-
-      // strings with varying thickness (thinnest at top, thickest at bottom)
-      const minStrokeWidth = H * 0.005;
-      const maxStrokeWidth = H * 0.02;
-      state.tuning.forEach((_,i)=>{
-        const y = (i+1)*H/(S+1);
-        const line = document.createElementNS(svg.namespaceURI,'line');
-        line.setAttribute('x1', 0);
-        line.setAttribute('y1', y);
-        line.setAttribute('x2', W);
-        line.setAttribute('y2', y);
-        // Calculate stroke width linearly based on string index
-        const strokeWidth = S > 1
-          ? minStrokeWidth + (i)*(maxStrokeWidth-minStrokeWidth)/(S-1)
-          : (minStrokeWidth + maxStrokeWidth)/2;
-        line.setAttribute('stroke','var(--string-color)');
-        line.setAttribute('stroke-width', strokeWidth);
-        svg.appendChild(line);
-      });
-
-      // frets and fret numbers
-      for(let f=0;f<=F;f++){
-        const x=margin+f*segment;
-        const line=document.createElementNS(svg.namespaceURI,'line');
-        line.setAttribute('x1',x); line.setAttribute('y1',0);
-        line.setAttribute('x2',x); line.setAttribute('y2',H);
-        line.setAttribute('stroke','var(--fret-line)');
-        line.setAttribute('stroke-width', f===0?4:1);
-        svg.appendChild(line);
-        if(f>0){
-          const txt=document.createElementNS(svg.namespaceURI,'text');
-          txt.setAttribute('x', x - segment/2); txt.setAttribute('y', H + 14);
-          txt.setAttribute('font-size', fontSize);
-  txt.setAttribute('text-anchor','middle');
-  txt.setAttribute('dominant-baseline','middle'); txt.setAttribute('text-anchor','middle');
-          txt.textContent=f; svg.appendChild(txt);
-        }
-      }
-
-      // notes
-      state.tuning.forEach((openNote,i)=>{
-        const openIdx=notes.indexOf(openNote);
-        const y=(i+1)*H/(S+1);
-        for(let f=0; f<=F; f++){
-          const note=notes[(openIdx+f)%12];
-          if(state.activeChord.length){
-            if(!state.activeChord.includes(note)) continue;
-          } else {
-            if(!state.scaleNotes.includes(note)) continue;
-          }
-          const cx=margin + (f-0.5)*segment;
-          const circle=document.createElementNS(svg.namespaceURI,'circle');
-          circle.setAttribute('cx',cx); circle.setAttribute('cy',y);
-          circle.setAttribute('r', radius);
-          const isRoot=(note===state.key);
-          circle.setAttribute('fill', isRoot?'var(--root-color)':'var(--scale-color)');
-          circle.setAttribute('stroke','#000'); svg.appendChild(circle);
-          const txt=document.createElementNS(svg.namespaceURI,'text');
-          txt.setAttribute('x',cx); txt.setAttribute('y',y+4);
-          txt.setAttribute('font-size', fontSize);
-  txt.setAttribute('text-anchor','middle');
-  txt.setAttribute('dominant-baseline','middle'); txt.setAttribute('text-anchor','middle');
-          txt.textContent=note; svg.appendChild(txt);
-        }
-      });
-    }
-
-    function renderChords(){
-      Object.values(lists).forEach(l=> l.innerHTML='');
-      const deg = state.scaleNotes.length;
-      state.scaleNotes.forEach((_, i) => {
-        [['triads',[i,i+2,i+4],'Triad'],
-         ['sevenths',[i,i+2,i+4,i+6],'7th chord'],
-         ['ninths',[i,i+2,i+4,i+8],'9th chord'],
-         ['elevenths',[i,i+2,i+4,i+10],'11th chord']]
-        .forEach(([key,degs,label])=>{
-          const notesArr = degs.map(d=>state.scaleNotes[d%deg]);
-          const block = document.createElement('div');
-          block.className = 'chord-block';
-          block.innerHTML = `<div class="chord-name">${label}, deg ${i+1}</div><div class="chord-notes">${notesArr.join(', ')}</div>`;
-          block.onclick = ()=>{
-            state.activeChord.join()==notesArr.join()? state.activeChord=[]: state.activeChord=notesArr;
-            document.querySelectorAll('.chord-block').forEach(el=>el.classList.remove('active'));
-            if(state.activeChord.length) block.classList.add('active');
-            drawFretboard();
+    function renderChordControls(){
+      chordsSection.innerHTML='';
+      const degCount = state.scaleNotes.length;
+      state.highlight = { active:false, notes:[] };
+      state.chordSelections = {};
+      const extensions = [
+        {offset:2,label:'3rd'},
+        {offset:4,label:'5th'},
+        {offset:6,label:'7th'},
+        {offset:8,label:'9th'},
+        {offset:10,label:'11th'},
+        {offset:12,label:'13th'}
+      ];
+      state.scaleNotes.forEach((note,i)=>{
+        const sec = document.createElement('div'); sec.className='degree-section';
+        const header = document.createElement('div'); header.className='degree-header';
+        const title = document.createElement('div'); title.className='degree-title';
+        title.textContent = `Degree ${i+1}: ${note}`;
+        const btn = document.createElement('button'); btn.className='highlight-btn'; btn.textContent='Highlight';
+        btn.onclick = ()=>{
+          state.highlight.active = !state.highlight.active;
+          btn.textContent = state.highlight.active ? 'Reset' : 'Highlight';
+          drawFretboard();
+        };
+        header.appendChild(title); header.appendChild(btn);
+        sec.appendChild(header);
+        const btns = document.createElement('div'); btns.className='degree-buttons';
+        extensions.forEach(ext=>{
+          const b = document.createElement('button'); b.textContent = ext.label;
+          b.onclick = ()=>{
+            state.chordSelections[i] = state.chordSelections[i] || [];
+            const arr = state.chordSelections[i];
+            const idx = arr.indexOf(ext.offset);
+            if(idx>=0){ arr.splice(idx,1); b.classList.remove('selected'); }
+            else { arr.push(ext.offset); b.classList.add('selected'); }
+            // Build chord starting from this degree
+            const notesArr = [state.scaleNotes[i], ...arr.map(off=> state.scaleNotes[(i+off) % degCount])];
+            state.highlight.notes = notesArr;
+            if(state.highlight.active) drawFretboard();
           };
-          lists[key].appendChild(block);
+          btns.appendChild(b);
         });
+        sec.appendChild(btns);
+        chordsSection.appendChild(sec);
       });
     }
 
