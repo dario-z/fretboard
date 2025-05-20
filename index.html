@@ -32,7 +32,7 @@
     #tunings label { display: flex; flex-direction: column; font-size: 0.8rem; }
     #fretboard-section { background: var(--bg-fretboard); padding: 1rem; }
     #fretboard { display: block; width: 100%; }
-    #chords-section { background: var(--bg-chords); padding: 1rem; }
+    #chords-section { background: var(--bg-controls); padding: 1rem; }
     #chords { display: flex; flex-direction: column; gap: 1rem; }
     .chord-group h3 { margin: 0 0 0.5rem 0; font-size: 1rem; }
     .chord-group .chord-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
@@ -263,7 +263,7 @@ const fontSize = `${H * 0.03}px`;
           const cx=margin + (f-0.5)*segment;
           const circle=document.createElementNS(svg.namespaceURI,'circle');
           circle.setAttribute('cx',cx); circle.setAttribute('cy',y);
-          circle.setAttribute('r', f===0 ? radiusOpen : radius);
+          circle.setAttribute('r', radius);
           const isRoot=(note===state.key);
           circle.setAttribute('fill', isRoot?'var(--root-color)':'var(--scale-color)');
           circle.setAttribute('stroke','#000'); svg.appendChild(circle);
