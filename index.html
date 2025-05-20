@@ -64,6 +64,27 @@
       .chord-block { width: 100px; height: 55px; border-radius: 20px; }
     }
   </style>
+
+<style>
+  /* Responsive controls: keep horizontal scroll, wrap only on very narrow screens */
+  #controls {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  #controls label {
+    flex: 0 0 auto;
+  }
+  @media (max-width: 400px) {
+    #controls {
+      flex-wrap: wrap;
+    }
+  }
+</style>
+
 </head>
 <body>
   <section id="controls">
@@ -118,7 +139,8 @@
     const defaultTunings = {
       1:['E'],2:['B','E'],3:['G','B','E'],4:['D','G','B','E'],
       5:['A','D','G','B','E'],6:['E','A','D','G','B','E'],
-      7:['B','E','A','D','G','B','E'],8:['F#','B','E','A','D','G','B','E'],
+      7:['B','E','A','D','G','B','E'],8:[
+      'E','B','E','A','D','G','B','E'],
       9:['C#','F#','B','E','A','D','G','B','E'],10:['B','E','A','D','G','B','E','A','D','G']
     };
     const keySelect = document.getElementById('key-select');
@@ -132,7 +154,7 @@
       ninths: document.querySelector('#ninths .chord-list'),
       elevenths: document.querySelector('#elevenths .chord-list')
     };
-    let state = { key:'C', scale:'Major Pentatonic', strings:6, tuning:[], scaleNotes:[], frets:24, activeChord:[] };
+    let state = { key:'E', scale:'Minor (Aeolian)', strings:8, tuning:[], scaleNotes:[], frets:24, activeChord:[] };
 
     function init() {
       notes.forEach(n=> keySelect.innerHTML+=`<option>${n}</option>`);
@@ -169,9 +191,16 @@
 
     function drawFretboard(){
       const W = svg.clientWidth;
-      const ratio = 0.15;
-      const H = W * ratio;
-      const bottomMargin = 20;
+      // Calculate vertical size adapting to viewport
+const bottomMargin = 20;
+const initialH = W * 0.3;
+const maxH = window.innerHeight - bottomMargin;
+const H = Math.min(initialH, maxH);
+
+// Dynamic note sizing based on computed H
+const radiusOpen = H * 0.05;
+const radius = H * 0.04;
+const fontSize = `${H * 0.03}px`;
       const totalHeight = H + bottomMargin;
       svg.setAttribute('viewBox', `0 0 ${W} ${totalHeight}`);
       svg.setAttribute('height', totalHeight);
@@ -215,7 +244,7 @@
         if(f>0){
           const txt=document.createElementNS(svg.namespaceURI,'text');
           txt.setAttribute('x', x - segment/2); txt.setAttribute('y', H + 14);
-          txt.setAttribute('font-size','10'); txt.setAttribute('text-anchor','middle');
+          txt.setAttribute('font-size', fontSize); txt.setAttribute('text-anchor','middle');
           txt.textContent=f; svg.appendChild(txt);
         }
       }
@@ -234,13 +263,13 @@
           const cx=margin + (f-0.5)*segment;
           const circle=document.createElementNS(svg.namespaceURI,'circle');
           circle.setAttribute('cx',cx); circle.setAttribute('cy',y);
-          circle.setAttribute('r', f===0?14:12);
+          circle.setAttribute('r', f===0 ? radiusOpen : radius);
           const isRoot=(note===state.key);
           circle.setAttribute('fill', isRoot?'var(--root-color)':'var(--scale-color)');
           circle.setAttribute('stroke','#000'); svg.appendChild(circle);
           const txt=document.createElementNS(svg.namespaceURI,'text');
           txt.setAttribute('x',cx); txt.setAttribute('y',y+4);
-          txt.setAttribute('font-size','10'); txt.setAttribute('text-anchor','middle');
+          txt.setAttribute('font-size', fontSize); txt.setAttribute('text-anchor','middle');
           txt.textContent=note; svg.appendChild(txt);
         }
       });
