@@ -65,45 +65,24 @@
     }
   </style>
 
-<style>
-  /* Responsive controls: keep horizontal scroll, wrap only on very narrow screens */
-  #controls {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-  }
-  #controls label {
-    flex: 0 0 auto;
-  }
-  @media (max-width: 400px) {
-    #controls {
-      flex-wrap: wrap;
+  <style>
+    /* Always horizontal scroll for controls and tunings */
+    #controls, #tunings {
+      flex-wrap: nowrap !important;
+      overflow-x: auto !important;
+      flex-direction: row !important;
     }
-  }
-</style>
-
-
-<style>
-  /* Always horizontal scroll for controls and tunings */
-  #controls, #tunings {
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    flex-direction: row !important;
-  }
-  /* Chord lists as horizontal scrollable rows */
-  .chord-list {
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    gap: 0.5rem;
-  }
-  .chord-list .chord-block {
-    flex: 0 0 auto !important;
-  }
-</style>
+    /* Chord lists as horizontal scrollable rows */
+    .chord-list {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      overflow-x: auto !important;
+      gap: 0.5rem;
+    }
+    .chord-list .chord-block {
+      flex: 0 0 auto !important;
+    }
+  </style>
 
 </head>
 <body>
@@ -212,15 +191,15 @@
     function drawFretboard(){
       const W = svg.clientWidth;
       // Calculate vertical size adapting to viewport
-const bottomMargin = 20;
-const initialH = W * 0.3;
-const maxH = window.innerHeight - bottomMargin;
-const H = Math.min(initialH, maxH);
+      const bottomMargin = 20;
+      const initialH = W * 0.3;
+      const maxH = window.innerHeight - bottomMargin;
+      const H = Math.min(initialH, maxH);
 
-// Dynamic note sizing based on computed H
-const radiusOpen = H * 0.05;
-const radius = H * 0.04;
-const fontSize = `${H * 0.03}px`;
+      // Dynamic note sizing based on computed H
+      const radiusOpen = H * 0.05;
+      const radius = H * 0.04;
+      const fontSize = `${H * 0.03}px`;
       const totalHeight = H + bottomMargin;
       svg.setAttribute('viewBox', `0 0 ${W} ${totalHeight}`);
       svg.setAttribute('height', totalHeight);
@@ -228,7 +207,7 @@ const fontSize = `${H * 0.03}px`;
       const S=state.strings, F=state.frets;
       const segment=W/(F+1), margin=segment;
       svg.innerHTML='';
-      
+
       // fretboard background and markers
       [[-1,0],[11,12],[23,24]].forEach(([a,b])=>{
         const rect=document.createElementNS(svg.namespaceURI,'rect');
@@ -243,13 +222,23 @@ const fontSize = `${H * 0.03}px`;
         rect.setAttribute('fill','var(--fill-blue)'); svg.appendChild(rect);
       });
 
-      // strings
+      // strings with varying thickness (thinnest at top, thickest at bottom)
+      const minStrokeWidth = H * 0.005;
+      const maxStrokeWidth = H * 0.02;
       state.tuning.forEach((_,i)=>{
-        const y=(i+1)*H/(S+1);
-        const line=document.createElementNS(svg.namespaceURI,'line');
-        line.setAttribute('x1',0); line.setAttribute('y1',y);
-        line.setAttribute('x2',W); line.setAttribute('y2',y);
-        line.setAttribute('stroke','var(--string-color)'); svg.appendChild(line);
+        const y = (i+1)*H/(S+1);
+        const line = document.createElementNS(svg.namespaceURI,'line');
+        line.setAttribute('x1', 0);
+        line.setAttribute('y1', y);
+        line.setAttribute('x2', W);
+        line.setAttribute('y2', y);
+        // Calculate stroke width linearly based on string index
+        const strokeWidth = S > 1
+          ? minStrokeWidth + (i)*(maxStrokeWidth-minStrokeWidth)/(S-1)
+          : (minStrokeWidth + maxStrokeWidth)/2;
+        line.setAttribute('stroke','var(--string-color)');
+        line.setAttribute('stroke-width', strokeWidth);
+        svg.appendChild(line);
       });
 
       // frets and fret numbers
