@@ -150,6 +150,18 @@ body {
   animation-iteration-count: 1, infinite;
 }
 
+
+/* Rotate pangolino3 smoothly clockwise */
+#pangolino3 {
+  width: 100px;
+  height: 100px;
+  animation: rotateClockwise 40s linear infinite !important;
+}
+@keyframes rotateClockwise {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 </style>
 </head>
 <body>
@@ -166,6 +178,11 @@ body {
     <div id="tunings"></div>
   </section>
   <section id="fretboard-section"><svg id="fretboard"></svg></section>
+  <header id="site-header">
+    <img id="pangolino3" class="rotate-logo" src="pangolino3.png" alt="Logo Pangolino" >
+    <h1 id="site-title">Chord Construction</h1>
+  </header>
+
   <section id="chords-section">
     <!-- Dynamic degree sections here -->
   </section>
