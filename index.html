@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Import Open Sans for body text -->
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+  <!-- Import Sue Ellen Francisco for titles -->
+  <link href="https://fonts.googleapis.com/css2?family=Sue+Ellen+Francisco&display=swap" rel="stylesheet">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Scale & Chord Visualizer (Responsive)</title>
   <style>
+    /* Color variables */
     :root {
       --bg-controls: #E6E6F7;
       --bg-fretboard: #FFFFFF;
@@ -18,13 +22,17 @@
       --fret-line: #BBBBBB;
       --text-color: #222222;
     }
+    /* Base styles */
     html, body { margin: 0; padding: 0; height: 100%; font-family: 'Open Sans', sans-serif; color: var(--text-color); }
     section { width: 100%; box-sizing: border-box; }
+    /* Controls */
     #controls { background: var(--bg-controls); display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; padding: 1rem; }
     #controls label { display: flex; flex-direction: column; font-size: 0.9rem; }
     #tunings { display: flex; gap: 0.5rem; }
+    /* Fretboard */
     #fretboard-section { background: var(--bg-fretboard); padding: 1rem; }
     #fretboard { display: block; width: 100%; }
+    /* Chords */
     #chords-section { background: var(--bg-chords); padding: 1rem; }
     .degree-section { margin-bottom: 1rem; padding: 0.5rem; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
     .degree-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
@@ -33,29 +41,20 @@
     .degree-buttons button { padding: 0.3rem 0.6rem; border: none; border-radius: 4px; cursor: pointer; background: var(--bg-controls); transition: background 0.2s; }
     .degree-buttons button.selected { background: var(--scale-color); }
     .highlight-btn { padding: 0.3rem 0.8rem; border: none; border-radius: 4px; cursor: pointer; background: var(--root-color); color: white; }
-  
-    
-    #site-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem;
-      background-color: var(--bg-controls);
-      border-bottom: 2px solid #ccc;
-      justify-content: center;
-    }
+    /* Site header & logo */
+    #site-header { display: flex; align-items: center; gap: 1rem; padding: 1rem; background-color: var(--bg-controls); justify-content: center; }
+    #site-logo { width: 100px; height: 100px; image-rendering: pixelated; }
 
-    #site-logo {
-      width: 100px;
-      height: 100px;
-      image-rendering: pixelated;
-    }
-
-    #site-title {
-      font-size: 1.6rem;
-      font-family: 'Open Sans', sans-serif;
+    /* Main titles: use Sue Ellen Francisco */
+    h1 {
+      font-family: 'Sue Ellen Francisco', cursive;
+      text-align: center;
       margin: 0;
       color: var(--text-color);
+      font-size: 3rem;
+      opacity: 0;
+      animation: fadeInTitle 1.2s ease-in forwards, pulse 5s ease-in-out 2s infinite;
+      animation-delay: 0.5s, 2s;
     }
 
     @media (max-width: 480px) {
@@ -63,112 +62,63 @@
         flex-direction: column;
         align-items: center;
       }
-
-      #site-title {
+      h1 {
         text-align: center;
       }
     }
 
-
-      #site-title {
-        text-align: center;
+    /* Animations */
+    @keyframes wobble {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(1.5deg); }
+      75% { transform: rotate(-1.5deg); }
+    }
+    @keyframes logoEntry {
+      to {
+        opacity: 1;
+        transform: translateX(0);
       }
     }
-
-  
-@keyframes wobble {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(1.5deg); }
-  75% { transform: rotate(-1.5deg); }
-}
-
-#site-logo {
-  animation: wobble 3s infinite ease-in-out;
-}
-
-
-@keyframes wobble {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(1.5deg); }
-  75% { transform: rotate(-1.5deg); }
-}
-
-@keyframes logoEntry {
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeInTitle {
-  to { opacity: 1; }
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-}
-
-@keyframes fadeBodyIn {
-  to { opacity: 1; }
-}
-
-body {
-  opacity: 0;
-  animation: fadeBodyIn 0.6s ease-out forwards;
-}
-
-#site-logo {
-  width: 100px;
-  height: 100px;
-  image-rendering: pixelated;
-  opacity: 0;
-  transform: translateX(-20px);
-  animation: logoEntry 1s ease-out forwards, wobble 3s infinite ease-in-out;
-}
-
-#site-logo:hover {
-  transform: rotate(10deg);
-  transition: transform 0.3s ease;
-}
-
-#site-title {
-  font-size: 1.6rem;
-  font-family: 'Open Sans', sans-serif;
-  margin: 0;
-  color: var(--text-color);
-  opacity: 0;
-  animation: fadeInTitle 1.2s ease-in forwards;
-  animation-delay: 0.5s;
-  animation-fill-mode: forwards;
-  animation-iteration-count: 1;
-  animation-name: fadeInTitle, pulse;
-  animation-duration: 1.2s, 5s;
-  animation-timing-function: ease-in, ease-in-out;
-  animation-fill-mode: forwards, none;
-  animation-delay: 0.5s, 2s;
-  animation-iteration-count: 1, infinite;
-}
-
-
-/* Rotate pangolino3 smoothly clockwise */
-#pangolino3 {
-  width: 100px;
-  height: 100px;
-  animation: rotateClockwise 40s linear infinite !important;
-}
-@keyframes rotateClockwise {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-</style>
+    @keyframes fadeInTitle {
+      to { opacity: 1; }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+    @keyframes fadeBodyIn {
+      to { opacity: 1; }
+    }
+    body {
+      opacity: 0;
+      animation: fadeBodyIn 0.6s ease-out forwards;
+    }
+    #site-logo {
+      opacity: 0;
+      transform: translateX(-20px);
+      animation: logoEntry 1s ease-out forwards, wobble 3s infinite ease-in-out;
+    }
+    #site-logo:hover {
+      transform: rotate(10deg);
+      transition: transform 0.3s ease;
+    }
+    /* Rotating pangolino3 */
+    #pangolino3 {
+      width: 100px;
+      height: 100px;
+      animation: rotateClockwise 40s linear infinite !important;
+    }
+    @keyframes rotateClockwise {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
 
   <header id="site-header">
     <img src="pangolino1.png" alt="Logo Pangolino" id="site-logo">
-    <h1 id="site-title">Fretboard Visualizer</h1>
+    <h1>Fretboard Visualizer</h1>
   </header>
 
   <section id="controls">
@@ -178,9 +128,10 @@ body {
     <div id="tunings"></div>
   </section>
   <section id="fretboard-section"><svg id="fretboard"></svg></section>
+
   <header id="site-header">
-    <img id="pangolino3" class="rotate-logo" src="pangolino3.png" alt="Logo Pangolino" >
-    <h1 id="site-title">Chord Construction</h1>
+    <img id="pangolino3" class="rotate-logo" src="pangolino3.png" alt="Logo Pangolino">
+    <h1>Chord Construction</h1>
   </header>
 
   <section id="chords-section">
@@ -225,7 +176,7 @@ body {
     function renderChordControls(){
       chordsSection.innerHTML='';
       const degCount = state.scaleNotes.length;
-      state.highlight = {	active:false, notes:[]	};
+      state.highlight = { active:false, notes:[] };
       state.chordSelections = {};
       const extensions = [
         {offset:0,label:'1st'},
