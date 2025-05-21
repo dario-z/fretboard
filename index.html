@@ -8,7 +8,7 @@
     :root {
       --bg-controls: #E6E6FA;
       --bg-fretboard: #FFFFFF;
-      --bg-chords: #FFD1DC;
+      --bg-chords: var(--bg-controls);
       --root-color: #FF6961;
       --scale-color: #D8BFD8;
       --fill-yellow: #FFFFE0;
@@ -84,9 +84,10 @@
     function renderChordControls(){
       chordsSection.innerHTML='';
       const degCount = state.scaleNotes.length;
-      state.highlight = { active:false, notes:[] };
+      state.highlight = {	active:false, notes:[]	};
       state.chordSelections = {};
       const extensions = [
+        {offset:0,label:'1st'},
         {offset:2,label:'3rd'},
         {offset:4,label:'5th'},
         {offset:6,label:'7th'},
@@ -116,8 +117,7 @@
             const idx = arr.indexOf(ext.offset);
             if(idx>=0){ arr.splice(idx,1); b.classList.remove('selected'); }
             else { arr.push(ext.offset); b.classList.add('selected'); }
-            // Build chord starting from this degree
-            const notesArr = [state.scaleNotes[i], ...arr.map(off=> state.scaleNotes[(i+off) % degCount])];
+            const notesArr = arr.map(off=> state.scaleNotes[(i+off) % degCount]);
             state.highlight.notes = notesArr;
             if(state.highlight.active) drawFretboard();
           };
