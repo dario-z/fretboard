@@ -60,7 +60,17 @@
   border: none;
   box-shadow: none; background: var(--bg-controls); display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; padding: 1rem; }
     #controls label { display: flex; flex-direction: column; font-size: 0.9rem; }
-    #tunings { display: flex; gap: 0.5rem; }
+    #tunings {
+ 	 display: flex;
+ 	 flex-wrap: wrap;
+ 	 gap: 0.5rem;
+ 	 justify-content: flex-start;
+	}
+
+	#tunings label {
+ 	 flex: 0 0 auto;
+	}
+
     /* Fretboard */
     #fretboard-section { background: var(--bg-fretboard); padding: 1rem; }
     #fretboard { display: block; width: 100%; }
